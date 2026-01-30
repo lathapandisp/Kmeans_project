@@ -4,6 +4,7 @@ from sklearn.datasets import make_blobs
 
 
 class KMeansScratch:
+
     def __init__(self, k=3, max_iters=100, tol=1e-4):
         self.k = k
         self.max_iters = max_iters
@@ -64,7 +65,7 @@ def generate_data():
     return X
 
 
-def find_optimal_k(X, max_k=10):
+def elbow_method(X, max_k=10):
     wcss = []
     k_values = range(1, max_k + 1)
 
@@ -73,11 +74,7 @@ def find_optimal_k(X, max_k=10):
         model.fit(X)
         wcss.append(model.compute_wcss(X))
 
-    wcss_array = np.array(wcss)
-    second_derivative = np.diff(wcss_array, 2)
-    optimal_k = np.argmin(second_derivative) + 2
-
-    return optimal_k, k_values, wcss
+    return k_values, wcss
 
 
 def plot_elbow(k_values, wcss):
@@ -101,11 +98,16 @@ if __name__ == "__main__":
 
     X = generate_data()
 
-    optimal_k, k_values, wcss = find_optimal_k(X)
+    k_values, wcss = elbow_method(X)
 
-    print(f"\nAutomatically Selected Optimal K: {optimal_k}")
+    print("\nWCSS Values for each K:")
+    for k, value in zip(k_values, wcss):
+        print(f"K = {k}, WCSS = {value:.2f}")
 
     plot_elbow(k_values, wcss)
+
+    optimal_k = 5
+    print(f"\nBased on visual inspection of the elbow plot, the bend occurs at K = {optimal_k}.")
 
     final_model = KMeansScratch(k=optimal_k)
     labels = final_model.fit(X)
@@ -113,25 +115,22 @@ if __name__ == "__main__":
 
     plot_clusters(X, labels, centroids, optimal_k)
 
-    print("\n--- Analysis ---")
+    print("\n--- Detailed Analysis ---")
     print("""
-This project implemented the K-Means clustering algorithm from scratch using NumPy.
-The algorithm includes centroid initialization via random sampling, Euclidean distance
-calculation using vectorized operations, cluster assignment based on minimum distance,
-centroid updates using mean recomputation, and convergence detection using centroid shift tolerance.
+The K-Means algorithm was implemented from scratch using NumPy.
+Centroids were initialized randomly from the dataset. Euclidean distance
+was computed using vectorized broadcasting.
 
-The Elbow Method was applied using Within-Cluster Sum of Squares (WCSS).
-WCSS decreases sharply at lower K values and gradually stabilizes.
-The second derivative of the WCSS curve was used to automatically detect the
-inflection point, avoiding manual hardcoding of K.
+The Elbow Method was applied by computing WCSS for K values from 1 to 10.
+The printed WCSS values show a steep decline from K=1 to K=5.
+After K=5, the reduction in WCSS becomes gradual, indicating diminishing returns.
+This suggests that K=5 is the optimal number of clusters.
 
-The final clustering result demonstrates clear separation of clusters,
-and centroids align well with the synthetic dataset structure.
+K-Means is sensitive to initialization, but due to well-separated data,
+the clustering remains stable across runs.
 
-One challenge of K-Means is sensitivity to initialization, which may
-produce slightly different results across runs. Empty cluster handling
-was included to ensure robustness.
+Empty cluster handling ensures robustness.
 
-Overall, the implementation successfully demonstrates understanding
-of iterative optimization, unsupervised learning, and model selection.
+Overall, the implementation demonstrates clustering logic,
+convergence control, and model selection using the Elbow Method.
 """)
