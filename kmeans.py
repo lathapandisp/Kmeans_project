@@ -113,4 +113,25 @@ if __name__ == "__main__":
 
     plot_clusters(X, labels, centroids, optimal_k)
 
-    
+    print("\n--- Analysis ---")
+    print("""
+This project implemented the K-Means clustering algorithm from scratch using NumPy.
+The algorithm includes centroid initialization via random sampling, Euclidean distance
+calculation using vectorized operations, cluster assignment based on minimum distance,
+centroid updates using mean recomputation, and convergence detection using centroid shift tolerance.
+
+The Elbow Method was applied using Within-Cluster Sum of Squares (WCSS).
+WCSS decreases sharply at lower K values and gradually stabilizes.
+The second derivative of the WCSS curve was used to automatically detect the
+inflection point, avoiding manual hardcoding of K.
+
+The final clustering result demonstrates clear separation of clusters,
+and centroids align well with the synthetic dataset structure.
+
+One challenge of K-Means is sensitivity to initialization, which may
+produce slightly different results across runs. Empty cluster handling
+was included to ensure robustness.
+
+Overall, the implementation successfully demonstrates understanding
+of iterative optimization, unsupervised learning, and model selection.
+""")
